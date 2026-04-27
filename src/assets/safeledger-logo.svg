@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 160" width="480" height="160">
+  <defs>
+    <!-- Gold gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#F5D478"/>
+      <stop offset="35%"  stop-color="#C9973A"/>
+      <stop offset="65%"  stop-color="#E8BC5A"/>
+      <stop offset="100%" stop-color="#A67520"/>
+    </linearGradient>
+    <!-- Gold shimmer for text -->
+    <linearGradient id="textGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#F0D060"/>
+      <stop offset="50%"  stop-color="#C9973A"/>
+      <stop offset="100%" stop-color="#8A6010"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Soft glow for emblem -->
+    <filter id="emblemGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="480" height="160" fill="#09090F" rx="12"/>
+
+  <!-- Subtle grid lines -->
+  <g stroke="rgba(201,151,58,0.04)" stroke-width="1">
+    <line x1="0" y1="40"  x2="480" y2="40"/>
+    <line x1="0" y1="80"  x2="480" y2="80"/>
+    <line x1="0" y1="120" x2="480" y2="120"/>
+    <line x1="120" y1="0"  x2="120" y2="160"/>
+    <line x1="240" y1="0"  x2="240" y2="160"/>
+    <line x1="360" y1="0"  x2="360" y2="160"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- EMBLEM / MARK — left side                       -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- Outer ring -->
+  <circle cx="80" cy="80" r="55" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.4"/>
+  <!-- Inner ring -->
+  <circle cx="80" cy="80" r="46" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- Hexagon shield shape -->
+  <polygon
+    points="80,28 122,52 122,108 80,132 38,108 38,52"
+    fill="rgba(201,151,58,0.06)"
+    stroke="url(#goldGrad)"
+    stroke-width="1.5"
+    filter="url(#emblemGlow)"
+  />
+
+  <!-- Inner shield highlight -->
+  <polygon
+    points="80,36 115,57 115,103 80,124 45,103 45,57"
+    fill="none"
+    stroke="rgba(201,151,58,0.18)"
+    stroke-width="0.8"
+  />
+
+  <!-- Vault door circle -->
+  <circle cx="80" cy="80" r="26" fill="rgba(10,10,18,0.9)" stroke="url(#goldGrad)" stroke-width="1.8"/>
+  <circle cx="80" cy="80" r="20" fill="none" stroke="rgba(201,151,58,0.3)" stroke-width="0.8"/>
+
+  <!-- Vault dial lines (6 marks) -->
+  <g stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.7">
+    <line x1="80" y1="57" x2="80" y2="62"/>
+    <line x1="80" y1="98" x2="80" y2="103"/>
+    <line x1="57" y1="80" x2="62" y2="80"/>
+    <line x1="98" y1="80" x2="103" y2="80"/>
+    <line x1="63.4" y1="63.4" x2="67" y2="67"/>
+    <line x1="93" y1="93" x2="96.6" y2="96.6"/>
+    <line x1="63.4" y1="96.6" x2="67" y2="93"/>
+    <line x1="93" y1="67" x2="96.6" y2="63.4"/>
+  </g>
+
+  <!-- SL monogram -->
+  <!-- S -->
+  <path
+    d="M70,73 Q70,69 74,69 L82,69 Q86,69 86,73 Q86,77 80,77 Q74,77 74,81 Q74,85 78,85 L86,85"
+    fill="none"
+    stroke="url(#goldGrad)"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    filter="url(#glow)"
+  />
+  <!-- dot divider -->
+  <circle cx="89" cy="77" r="1" fill="rgba(201,151,58,0.4)"/>
+
+  <!-- Art deco corner accents on hexagon vertices -->
+  <g fill="url(#goldGrad)" opacity="0.8">
+    <circle cx="80"  cy="28"  r="2"/>
+    <circle cx="122" cy="52"  r="2"/>
+    <circle cx="122" cy="108" r="2"/>
+    <circle cx="80"  cy="132" r="2"/>
+    <circle cx="38"  cy="108" r="2"/>
+    <circle cx="38"  cy="52"  r="2"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- WORDMARK — right side                           -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- Thin art-deco top rule -->
+  <line x1="155" y1="48" x2="458" y2="48" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.35"/>
+
+  <!-- SAFELEDGER -->
+  <text
+    x="155" y="98"
+    font-family="'Georgia', 'Times New Roman', serif"
+    font-size="38"
+    font-weight="700"
+    letter-spacing="7"
+    fill="url(#textGold)"
+    filter="url(#glow)"
+  >SAFELEDGER</text>
+
+  <!-- DIGITAL VAULT tagline -->
+  <text
+    x="158" y="118"
+    font-family="'Georgia', 'Times New Roman', serif"
+    font-size="10.5"
+    font-weight="400"
+    letter-spacing="6.5"
+    fill="rgba(201,151,58,0.55)"
+  >DIGITAL  VAULT</text>
+
+  <!-- Thin art-deco bottom rule -->
+  <line x1="155" y1="128" x2="458" y2="128" stroke="url(#goldGrad)" stroke-width="0.5" opacity="0.35"/>
+
+  <!-- Diamond accent between lines and text -->
+  <g fill="rgba(201,151,58,0.5)">
+    <polygon points="155,48 158,44 161,48 158,52"/>
+    <polygon points="155,128 158,124 161,128 158,132"/>
+  </g>
+
+</svg>
