@@ -141,72 +141,128 @@ export default function Transactions() {
             {search && <p className="text-ember text-xs">Try adjusting your filters</p>}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            {/* Table header */}
-            <div className="px-4 py-3 grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 items-center"
-              style={{ borderBottom: '1px solid rgba(201,151,58,0.08)' }}>
-              {['Transaction', 'Amount', 'Status', 'Date', ''].map(h => (
-                <p key={h} className="table-header">{h}</p>
-              ))}
-            </div>
-
-            <div>
+          <>
+            {/* ── Mobile card list (< md) ──────────────────────────────── */}
+            <div className="md:hidden">
               {filtered.map((tx, i) => {
                 const meta = TYPE_META[tx.type] || TYPE_META.send
                 const isCredit = tx.type === 'receive' || tx.type === 'add'
                 return (
                   <div
                     key={tx._id}
-                    className="px-4 py-3.5 grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 items-center cursor-pointer animate-fade-up"
+                    className="px-4 py-3.5 cursor-pointer animate-fade-up"
                     style={{
-                      borderBottom: i < filtered.length - 1 ? '1px solid rgba(201,151,58,0.04)' : 'none',
+                      borderBottom: i < filtered.length - 1 ? '1px solid rgba(201,151,58,0.06)' : 'none',
                       animationDelay: `${i * 30}ms`,
                     }}
                     onClick={() => setSelected(tx)}
+                    onTouchStart={e => e.currentTarget.style.background = 'rgba(201,151,58,0.04)'}
+                    onTouchEnd={e => e.currentTarget.style.background = 'transparent'}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,151,58,0.02)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
-                    {/* Type */}
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: `${meta.color}12`, border: `1px solid ${meta.color}25` }}>
-                        <span style={{ color: meta.color, fontSize: '0.9rem', lineHeight: 1 }}>{meta.icon}</span>
+                    <div className="flex items-center justify-between gap-3">
+                      {/* Left: icon + type */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                          style={{ background: `${meta.color}12`, border: `1px solid ${meta.color}25` }}>
+                          <span style={{ color: meta.color, fontSize: '1rem', lineHeight: 1 }}>{meta.icon}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
+                          <p className="font-mono-custom text-ember text-[0.6rem] truncate">#{tx._id.slice(-8)}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
-                        <p className="font-mono-custom text-ember text-[0.6rem] truncate">#{tx._id.slice(-8)}</p>
+                      {/* Right: amount */}
+                      <div className="text-right shrink-0">
+                        <p className="font-mono-custom text-sm font-medium"
+                          style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
+                          {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </p>
+                        <p className="font-display text-ember text-[0.55rem] tracking-wider uppercase">{tx.currency}</p>
                       </div>
                     </div>
-
-                    {/* Amount */}
-                    <div>
-                      <p className="font-mono-custom text-sm font-medium"
-                        style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
-                        {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    {/* Bottom row: status + date */}
+                    <div className="flex items-center justify-between mt-2.5 pl-12">
+                      <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
+                      <p className="font-mono-custom text-ember text-xs">
+                        {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </p>
-                      <p className="font-display text-ember text-[0.55rem] tracking-wider uppercase">{tx.currency}</p>
                     </div>
-
-                    {/* Status */}
-                    <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
-
-                    {/* Date */}
-                    <p className="font-mono-custom text-ember text-xs">
-                      {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </p>
-
-                    {/* View */}
-                    <button className="text-ember hover:text-gold transition-colors">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </button>
                   </div>
                 )
               })}
             </div>
-          </div>
+
+            {/* ── Desktop table (≥ md) ──────────────────────────────────── */}
+            <div className="hidden md:block overflow-x-auto">
+              {/* Table header */}
+              <div className="px-4 py-3 grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 items-center"
+                style={{ borderBottom: '1px solid rgba(201,151,58,0.08)', minWidth: '520px' }}>
+                {['Transaction', 'Amount', 'Status', 'Date', ''].map(h => (
+                  <p key={h} className="table-header">{h}</p>
+                ))}
+              </div>
+
+              <div>
+                {filtered.map((tx, i) => {
+                  const meta = TYPE_META[tx.type] || TYPE_META.send
+                  const isCredit = tx.type === 'receive' || tx.type === 'add'
+                  return (
+                    <div
+                      key={tx._id}
+                      className="px-4 py-3.5 grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 items-center cursor-pointer animate-fade-up"
+                      style={{
+                        borderBottom: i < filtered.length - 1 ? '1px solid rgba(201,151,58,0.04)' : 'none',
+                        animationDelay: `${i * 30}ms`,
+                        minWidth: '520px',
+                      }}
+                      onClick={() => setSelected(tx)}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,151,58,0.02)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {/* Type */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ background: `${meta.color}12`, border: `1px solid ${meta.color}25` }}>
+                          <span style={{ color: meta.color, fontSize: '0.9rem', lineHeight: 1 }}>{meta.icon}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
+                          <p className="font-mono-custom text-ember text-[0.6rem] truncate">#{tx._id.slice(-8)}</p>
+                        </div>
+                      </div>
+
+                      {/* Amount */}
+                      <div>
+                        <p className="font-mono-custom text-sm font-medium"
+                          style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
+                          {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </p>
+                        <p className="font-display text-ember text-[0.55rem] tracking-wider uppercase">{tx.currency}</p>
+                      </div>
+
+                      {/* Status */}
+                      <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
+
+                      {/* Date */}
+                      <p className="font-mono-custom text-ember text-xs">
+                        {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </p>
+
+                      {/* View */}
+                      <button className="text-ember hover:text-gold transition-colors">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </>
         )}
       </div>
 

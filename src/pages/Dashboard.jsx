@@ -263,70 +263,109 @@ export default function Dashboard() {
         </div>
 
         <div className="card p-0 overflow-hidden">
-          {/* Table header */}
-          <div className="px-4 py-3 flex items-center gap-4"
-            style={{ borderBottom: '1px solid rgba(201,151,58,0.08)' }}>
-            {['Transaction', 'Amount', 'Status', 'Date'].map(h => (
-              <p key={h} className="table-header flex-1 first:flex-[2]">{h}</p>
-            ))}
-          </div>
-
           {transactions.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <p className="font-display text-smoke text-xs tracking-widest uppercase">No transactions</p>
             </div>
           ) : (
-            <div>
-              {transactions.slice(0, 5).map((tx, i) => {
-                const meta = TYPE_ICON[tx.type] || TYPE_ICON.send
-                const isCredit = tx.type === 'receive' || tx.type === 'add'
-                return (
-                  <div
-                    key={tx._id}
-                    className="px-4 py-3.5 flex items-center gap-4 cursor-pointer transition-colors animate-fade-up"
-                    style={{
-                      borderBottom: i < 4 ? '1px solid rgba(201,151,58,0.06)' : 'none',
-                      animationDelay: `${i * 50}ms`,
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,151,58,0.025)'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    {/* Type indicator */}
-                    <div className="flex items-center gap-3 flex-[2] min-w-0">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}25` }}>
-                        <span style={{ color: meta.color, fontSize: '0.85rem' }}>{meta.icon}</span>
+            <>
+              {/* Mobile card list (< sm) */}
+              <div className="sm:hidden">
+                {transactions.slice(0, 5).map((tx, i) => {
+                  const meta = TYPE_ICON[tx.type] || TYPE_ICON.send
+                  const isCredit = tx.type === 'receive' || tx.type === 'add'
+                  return (
+                    <div key={tx._id}
+                      className="px-4 py-3.5 animate-fade-up"
+                      style={{
+                        borderBottom: i < 4 ? '1px solid rgba(201,151,58,0.06)' : 'none',
+                        animationDelay: `${i * 50}ms`,
+                      }}>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}25` }}>
+                            <span style={{ color: meta.color, fontSize: '0.85rem' }}>{meta.icon}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
+                            <p className="font-mono-custom text-ember text-[0.62rem] truncate">#{tx._id.slice(-8)}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-mono-custom text-sm font-medium"
+                            style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
+                            {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="font-display text-ember text-[0.58rem] tracking-wider uppercase">{tx.currency}</p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
-                        <p className="font-mono-custom text-ember text-[0.62rem] truncate">#{tx._id.slice(-8)}</p>
+                      <div className="flex items-center justify-between mt-2 pl-11">
+                        <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
+                        <p className="font-mono-custom text-ember text-xs">
+                          {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </p>
                       </div>
                     </div>
+                  )
+                })}
+              </div>
 
-                    {/* Amount */}
-                    <div className="flex-1">
-                      <p className="font-mono-custom text-sm font-medium"
-                        style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
-                        {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                      </p>
-                      <p className="font-display text-ember text-[0.58rem] tracking-wider uppercase">{tx.currency}</p>
-                    </div>
-
-                    {/* Status */}
-                    <div className="flex-1">
-                      <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
-                    </div>
-
-                    {/* Date */}
-                    <div className="flex-1 text-right">
-                      <p className="font-mono-custom text-ember text-xs">
-                        {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      </p>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+              {/* Desktop table (≥ sm) */}
+              <div className="hidden sm:block overflow-x-auto">
+                <div className="px-4 py-3 flex items-center gap-4"
+                  style={{ borderBottom: '1px solid rgba(201,151,58,0.08)', minWidth: '440px' }}>
+                  {['Transaction', 'Amount', 'Status', 'Date'].map(h => (
+                    <p key={h} className="table-header flex-1 first:flex-[2]">{h}</p>
+                  ))}
+                </div>
+                <div>
+                  {transactions.slice(0, 5).map((tx, i) => {
+                    const meta = TYPE_ICON[tx.type] || TYPE_ICON.send
+                    const isCredit = tx.type === 'receive' || tx.type === 'add'
+                    return (
+                      <div
+                        key={tx._id}
+                        className="px-4 py-3.5 flex items-center gap-4 cursor-pointer transition-colors animate-fade-up"
+                        style={{
+                          borderBottom: i < 4 ? '1px solid rgba(201,151,58,0.06)' : 'none',
+                          animationDelay: `${i * 50}ms`,
+                          minWidth: '440px',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,151,58,0.025)'}
+                        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      >
+                        <div className="flex items-center gap-3 flex-[2] min-w-0">
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                            style={{ background: `${meta.color}15`, border: `1px solid ${meta.color}25` }}>
+                            <span style={{ color: meta.color, fontSize: '0.85rem' }}>{meta.icon}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-display text-chalk text-xs font-semibold tracking-wide capitalize">{tx.type}</p>
+                            <p className="font-mono-custom text-ember text-[0.62rem] truncate">#{tx._id.slice(-8)}</p>
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-mono-custom text-sm font-medium"
+                            style={{ color: isCredit ? '#4ADE80' : '#F87171' }}>
+                            {isCredit ? '+' : '-'}{Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </p>
+                          <p className="font-display text-ember text-[0.58rem] tracking-wider uppercase">{tx.currency}</p>
+                        </div>
+                        <div className="flex-1">
+                          <span className={STATUS_BADGE[tx.status] || 'badge-info'}>{tx.status}</span>
+                        </div>
+                        <div className="flex-1 text-right">
+                          <p className="font-mono-custom text-ember text-xs">
+                            {new Date(tx.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>

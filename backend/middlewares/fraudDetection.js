@@ -28,6 +28,12 @@ function toUSD(amount, currency) {
 
 // ── 1. Rapid-fire check ──────────────────────────────────────────────────────
 
+/**
+ * Checks whether a user has exceeded the per-minute transaction rate limit.
+ * Uses an in-memory sliding window — no database query needed.
+ * @param {string} userId - UUID of the user initiating the transaction
+ * @returns {{ blocked: boolean, reason?: string }}
+ */
 function checkRapidFire(userId) {
   const now = Date.now()
   const ts  = (windows.get(userId) ?? []).filter(t => now - t < WINDOW_MS)
@@ -46,6 +52,15 @@ function checkRapidFire(userId) {
 
 // ── 2. Daily limit check ─────────────────────────────────────────────────────
 
+/**
+ * Queries the DB to see if adding this transaction would breach the daily USD cap.
+ * Converts all outbound currencies to USD using static TO_USD rates.
+ * @param {string} userId   - UUID of the user
+ * @param {number} amount   - Amount of the current transaction
+ * @param {string} currency - Currency code of the current transaction (e.g. 'USD', 'PKR')
+ * @param {{ query: Function }} db - Database client or pool with a query() method
+ * @returns {Promise<{ blocked: boolean, reason?: string }>}
+ */
 async function checkDailyLimit(userId, amount, currency, db) {
   const usdValue = toUSD(parseFloat(amount), currency)
   if (!usdValue) return { blocked: false }

@@ -113,8 +113,8 @@ export default function Landing() {
     <div className="min-h-screen bg-void overflow-x-hidden">
 
       {/* ── Navigation ───────────────────────────────────────────────────── */}
-      <nav className="fixed top-0 inset-x-0 z-50 px-6 pt-3">
-        <div className="mx-auto max-w-5xl px-6 py-3.5 flex items-center justify-between rounded-2xl"
+      <nav className="fixed top-0 inset-x-0 z-50 px-3 sm:px-6 pt-3">
+        <div className="mx-auto max-w-5xl px-3 sm:px-6 py-3 sm:py-3.5 flex items-center justify-between rounded-2xl"
           style={{
             background: 'rgba(15, 16, 21, 0.85)',
             backdropFilter: 'blur(20px)',
@@ -122,20 +122,20 @@ export default function Landing() {
           }}>
 
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center shadow-gold">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center shadow-gold shrink-0">
               <span className="font-display text-xs font-bold text-[#0C0800]">SL</span>
             </div>
-            <span className="font-display text-white text-sm font-semibold tracking-wider">SAFELEDGER</span>
+            <span className="font-display text-white text-xs sm:text-sm font-semibold tracking-wider hidden sm:block">SAFELEDGER</span>
           </div>
 
           {/* CTA */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link to="/login"
-              className="text-smoke hover:text-chalk text-sm font-medium transition-colors px-4 py-2">
+              className="text-smoke hover:text-chalk text-xs font-medium transition-colors px-3 sm:px-4 py-2 whitespace-nowrap">
               Sign In
             </Link>
-            <Link to="/register" className="btn-gold text-xs py-2.5 px-5">
+            <Link to="/register" className="btn-gold text-xs py-2.5 px-4 sm:px-5 whitespace-nowrap">
               Open Account
             </Link>
           </div>
@@ -157,7 +157,7 @@ export default function Landing() {
         <div className="absolute inset-x-0 bottom-0 h-px"
           style={{ background: 'linear-gradient(90deg, transparent, rgba(201,151,58,0.3), transparent)' }} />
 
-        <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
           {STATS.map((s, i) => (
             <StatCounter key={s.label} value={s.value} label={s.label} delay={i * 100} />
           ))}

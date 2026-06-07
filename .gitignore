@@ -23,5 +23,6 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Generated report script (temp)
+# Generated report scripts (temp)
 generate_report.cjs
+generate_submission.cjs

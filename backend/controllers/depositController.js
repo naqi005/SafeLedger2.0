@@ -1,9 +1,25 @@
+/**
+ * Deposit Controller
+ *
+ * Handles crediting funds to a user's wallet.
+ * Uses a two-phase approach: create a 'pending' deposit record first,
+ * then call the process_deposit() stored procedure which acquires a row lock,
+ * credits the balance atomically, and marks the deposit 'completed'.
+ * If the stored procedure raises an exception the entire transaction rolls back.
+ */
+
 const { body }         = require('express-validator')
 const { query, getClient } = require('../config/database')
 const { send, fail }   = require('../utils/response')
 
 // ── POST /api/deposits ────────────────────────────────────────────────────────
 
+/**
+ * Creates a deposit and immediately completes it via the process_deposit() stored procedure.
+ * @route POST /api/deposits
+ * @body  {walletId, amount, method?}
+ * @returns {depositId, transactionId, currency, deposited, newBalance}
+ */
 const createDeposit = async (req, res) => {
   const { walletId, amount, method = 'manual' } = req.body
   const parsedAmount = parseFloat(amount)
@@ -66,6 +82,10 @@ const createDeposit = async (req, res) => {
 
 // ── GET /api/deposits ─────────────────────────────────────────────────────────
 
+/**
+ * Returns the deposit history for the authenticated user (latest 100).
+ * @route GET /api/deposits
+ */
 const getDeposits = async (req, res) => {
   try {
     const { rows } = await query(

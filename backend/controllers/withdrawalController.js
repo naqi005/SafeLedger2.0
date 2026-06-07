@@ -1,3 +1,13 @@
+/**
+ * Withdrawal Controller
+ *
+ * Handles debiting funds from a user's wallet.
+ * Fraud checks (rapid-fire rate limit + daily USD volume cap) run before the
+ * database transaction opens, so no locks are held while those checks execute.
+ * The process_withdrawal() stored procedure then acquires a FOR UPDATE row lock,
+ * validates the balance, and debits atomically.
+ */
+
 const { body }             = require('express-validator')
 const { query, getClient } = require('../config/database')
 const { send, fail }       = require('../utils/response')
@@ -5,6 +15,12 @@ const { checkRapidFire, checkDailyLimit } = require('../middlewares/fraudDetecti
 
 // ── POST /api/withdrawals ─────────────────────────────────────────────────────
 
+/**
+ * Runs fraud checks then debits the wallet via the process_withdrawal() stored procedure.
+ * @route POST /api/withdrawals
+ * @body  {walletId, amount, method?}
+ * @returns {withdrawalId, transactionId, currency, withdrawn, newBalance}
+ */
 const createWithdrawal = async (req, res) => {
   const { walletId, amount, method = 'manual' } = req.body
   const parsedAmount = parseFloat(amount)
@@ -83,6 +99,10 @@ const createWithdrawal = async (req, res) => {
 
 // ── GET /api/withdrawals ──────────────────────────────────────────────────────
 
+/**
+ * Returns the withdrawal history for the authenticated user (latest 100).
+ * @route GET /api/withdrawals
+ */
 const getWithdrawals = async (req, res) => {
   try {
     const { rows } = await query(

@@ -1,3 +1,13 @@
+/**
+ * Admin Controller
+ *
+ * Provides privileged operations accessible only to users with role='admin'.
+ * Every action taken here is recorded in audit_log for compliance traceability.
+ *
+ * Routes are protected by the adminOnly middleware defined in this file,
+ * which must be mounted before any admin route handler.
+ */
+
 const bcrypt = require('bcryptjs')
 const { query } = require('../config/database')
 const { send, fail } = require('../utils/response')
@@ -5,6 +15,10 @@ const { formatUser } = require('./authController')
 
 // ── Middleware: admin gate ────────────────────────────────────────────────────
 
+/**
+ * Express middleware that rejects non-admin requests with 403.
+ * Must be applied to every admin route in routes/admin.js.
+ */
 const adminOnly = (req, res, next) => {
   if (req.user.role !== 'admin') return fail(res, 'Admin access required.', 403)
   next()
@@ -12,6 +26,11 @@ const adminOnly = (req, res, next) => {
 
 // ── GET /api/admin/users ──────────────────────────────────────────────────────
 
+/**
+ * Returns a paginated list of all users with their wallet counts.
+ * @route GET /api/admin/users
+ * @query {limit=50, offset=0}
+ */
 const getAllUsers = async (req, res) => {
   try {
     const limit  = Math.min(parseInt(req.query.limit)  || 50, 500)
@@ -39,6 +58,11 @@ const getAllUsers = async (req, res) => {
 
 // ── GET /api/admin/transactions ───────────────────────────────────────────────
 
+/**
+ * Returns all transactions platform-wide with sender/receiver email context.
+ * @route GET /api/admin/transactions
+ * @query {limit=100, offset=0}
+ */
 const getAllTransactions = async (req, res) => {
   try {
     const limit  = Math.min(parseInt(req.query.limit)  || 100, 500)
@@ -82,6 +106,11 @@ const getAllTransactions = async (req, res) => {
 
 // ── PATCH /api/admin/wallets/:id/freeze ───────────────────────────────────────
 
+/**
+ * Sets a wallet's status to 'frozen', blocking all inbound/outbound operations.
+ * Action is recorded in audit_log under ADMIN_FREEZE_WALLET.
+ * @route PATCH /api/admin/wallets/:id/freeze
+ */
 const freezeWallet = async (req, res) => {
   try {
     const { rows } = await query(
@@ -103,6 +132,11 @@ const freezeWallet = async (req, res) => {
 
 // ── PATCH /api/admin/wallets/:id/unfreeze ────────────────────────────────────
 
+/**
+ * Restores a frozen wallet to 'active' status.
+ * Action is recorded in audit_log under ADMIN_UNFREEZE_WALLET.
+ * @route PATCH /api/admin/wallets/:id/unfreeze
+ */
 const unfreezeWallet = async (req, res) => {
   try {
     const { rows } = await query(
@@ -124,6 +158,12 @@ const unfreezeWallet = async (req, res) => {
 
 // ── GET /api/admin/audit-log ──────────────────────────────────────────────────
 
+/**
+ * Returns the full audit trail ordered by most recent first.
+ * Includes the email of the user who performed each action.
+ * @route GET /api/admin/audit-log
+ * @query {limit=100, offset=0}
+ */
 const getAuditLog = async (req, res) => {
   try {
     const limit  = Math.min(parseInt(req.query.limit)  || 100, 500)
@@ -153,6 +193,11 @@ const getAuditLog = async (req, res) => {
 
 // ── PATCH /api/admin/users/:id/suspend ───────────────────────────────────────
 
+/**
+ * Sets is_active=false on a user account, blocking all future logins.
+ * Admins cannot suspend themselves (returns 400).
+ * @route PATCH /api/admin/users/:id/suspend
+ */
 const suspendUser = async (req, res) => {
   try {
     if (req.params.id === req.user.user_id)
@@ -177,6 +222,10 @@ const suspendUser = async (req, res) => {
 
 // ── PATCH /api/admin/users/:id/reactivate ────────────────────────────────────
 
+/**
+ * Restores a suspended user account to active status.
+ * @route PATCH /api/admin/users/:id/reactivate
+ */
 const reactivateUser = async (req, res) => {
   try {
     const { rows } = await query(
@@ -198,6 +247,12 @@ const reactivateUser = async (req, res) => {
 
 // ── POST /api/admin/users/:id/reset-password ─────────────────────────────────
 
+/**
+ * Hashes and sets a new password for any user, then invalidates all their active sessions.
+ * Invalidating sessions forces the user to log in with the new password immediately.
+ * @route POST /api/admin/users/:id/reset-password
+ * @body  {newPassword}
+ */
 const resetPassword = async (req, res) => {
   try {
     const { newPassword } = req.body
@@ -234,5 +289,5 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
   adminOnly, getAllUsers, getAllTransactions,
-  freezeWallet, unfreezeWallet, getAuditLog, suspendUser, reactivateUser,
+  freezeWallet, unfreezeWallet, getAuditLog, suspendUser, reactivateUser, resetPassword,
 }

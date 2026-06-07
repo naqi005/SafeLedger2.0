@@ -1,3 +1,12 @@
+/**
+ * Wallet Controller
+ *
+ * Manages wallet lifecycle for authenticated users.
+ * Each user may have at most one wallet per currency (enforced by DB UNIQUE constraint).
+ * Balance reads/writes during money movement are handled exclusively by stored procedures —
+ * this controller only handles structural operations (create, list, freeze/unfreeze).
+ */
+
 const { body } = require('express-validator')
 const { query } = require('../config/database')
 const { send, fail } = require('../utils/response')
@@ -16,6 +25,10 @@ const fmt = (row) => ({
 
 // ── GET /api/wallets ──────────────────────────────────────────────────────────
 
+/**
+ * Returns all wallets owned by the authenticated user, ordered by creation date.
+ * @route GET /api/wallets
+ */
 const getAll = async (req, res) => {
   try {
     const { rows } = await query(
@@ -31,6 +44,12 @@ const getAll = async (req, res) => {
 
 // ── POST /api/wallets ─────────────────────────────────────────────────────────
 
+/**
+ * Creates a new zero-balance wallet for the given currency.
+ * Returns 409 if the user already has a wallet in that currency.
+ * @route POST /api/wallets
+ * @body  {currency} - One of the SUPPORTED currency codes
+ */
 const create = async (req, res) => {
   try {
     const curr = req.body.currency?.toUpperCase()
@@ -57,6 +76,10 @@ const create = async (req, res) => {
 
 // ── GET /api/wallets/:id ──────────────────────────────────────────────────────
 
+/**
+ * Returns a single wallet by ID, enforcing ownership (user_id must match).
+ * @route GET /api/wallets/:id
+ */
 const getById = async (req, res) => {
   try {
     const { rows } = await query(
@@ -72,6 +95,12 @@ const getById = async (req, res) => {
 
 // ── PATCH /api/wallets/:id/toggle ─────────────────────────────────────────────
 
+/**
+ * Toggles wallet status between 'active' and 'frozen'.
+ * Closed wallets cannot be reactivated — only admin can do that.
+ * The trg_wallet_status_change DB trigger logs every status change automatically.
+ * @route PATCH /api/wallets/:id/toggle
+ */
 const toggleStatus = async (req, res) => {
   try {
     const { rows: found } = await query(

@@ -42,23 +42,18 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
   return (
     <aside
-      className="flex flex-col h-screen shrink-0 fixed lg:relative z-30 lg:z-auto transition-all duration-300"
+      className={[
+        'flex flex-col h-screen shrink-0 fixed lg:relative z-30 lg:z-auto',
+        'transition-transform duration-300 ease-in-out lg:transition-none',
+        mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+      ].join(' ')}
       style={{
         width: collapsed ? '72px' : '240px',
         background: 'rgba(10, 10, 14, 0.97)',
         backdropFilter: 'blur(24px)',
         borderRight: '1px solid rgba(201,151,58,0.1)',
-        transform: mobileOpen ? 'translateX(0)' : undefined,
       }}
     >
-      {/* Mobile transform override */}
-      <style>{`
-        @media (max-width: 1023px) {
-          aside {
-            transform: ${mobileOpen ? 'translateX(0)' : 'translateX(-100%)'} !important;
-          }
-        }
-      `}</style>
 
       {/* Subtle vertical gold line at right edge */}
       <div className="absolute right-0 top-1/4 bottom-1/4 w-px"

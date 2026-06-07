@@ -146,8 +146,8 @@ export default function Exchange() {
           <div>
             <label className="label">From</label>
             <div className="flex gap-3">
-              <div className="relative shrink-0" style={{ width: '130px' }}>
-                <select value={from} onChange={e => setFrom(e.target.value)} className="select-field pr-8">
+              <div className="shrink-0 w-[110px] sm:w-[130px]">
+                <select value={from} onChange={e => setFrom(e.target.value)} className="select-field">
                   {CURRENCIES.map(c => (
                     <option key={c} value={c}>{CURRENCY_FLAGS[c]} {c}</option>
                   ))}
@@ -188,8 +188,8 @@ export default function Exchange() {
           <div>
             <label className="label">To</label>
             <div className="flex gap-3">
-              <div className="relative shrink-0" style={{ width: '130px' }}>
-                <select value={to} onChange={e => setTo(e.target.value)} className="select-field pr-8">
+              <div className="shrink-0 w-[110px] sm:w-[130px]">
+                <select value={to} onChange={e => setTo(e.target.value)} className="select-field">
                   {CURRENCIES.map(c => (
                     <option key={c} value={c}>{CURRENCY_FLAGS[c]} {c}</option>
                   ))}

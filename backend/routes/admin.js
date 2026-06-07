@@ -2,7 +2,7 @@ const router = require('express').Router()
 const auth   = require('../middlewares/auth')
 const {
   adminOnly, getAllUsers, getAllTransactions,
-  freezeWallet, unfreezeWallet, getAuditLog, suspendUser, reactivateUser,
+  freezeWallet, unfreezeWallet, getAuditLog, suspendUser, reactivateUser, resetPassword,
 } = require('../controllers/adminController')
 
 // All admin routes require a valid JWT + admin role
@@ -13,7 +13,8 @@ router.get('/transactions',             getAllTransactions)
 router.get('/audit-log',                getAuditLog)
 router.patch('/wallets/:id/freeze',     freezeWallet)
 router.patch('/wallets/:id/unfreeze',   unfreezeWallet)
-router.patch('/users/:id/suspend',      suspendUser)
-router.patch('/users/:id/reactivate',   reactivateUser)
+router.patch('/users/:id/suspend',        suspendUser)
+router.patch('/users/:id/reactivate',     reactivateUser)
+router.post('/users/:id/reset-password',  resetPassword)
 
 module.exports = router

@@ -84,9 +84,12 @@ app.use((err, _req, res, _next) => {
 async function start() {
   await testConnection()
   app.listen(PORT, () => {
+    const dbLabel = process.env.DATABASE_URL
+      ? new URL(process.env.DATABASE_URL).host
+      : `${process.env.DB_NAME}@${process.env.DB_HOST}`
     console.log(`\n✅  SafeLedger API  →  http://localhost:${PORT}`)
     console.log(`    Environment  : ${process.env.NODE_ENV || 'development'}`)
-    console.log(`    Database     : ${process.env.DB_NAME}@${process.env.DB_HOST}\n`)
+    console.log(`    Database     : ${dbLabel}\n`)
   })
 }
 

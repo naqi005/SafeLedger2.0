@@ -106,21 +106,23 @@ if (loading) return <PageLoader />
       </div>
 
       {/* ── Tabs ────────────────────────────────────────────────────────── */}
-      <div className="flex gap-1 p-1 rounded-xl w-fit"
-        style={{ background: 'rgba(15,16,21,0.9)', border: '1px solid rgba(201,151,58,0.1)' }}>
-        {TABS.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className="px-5 py-2 rounded-lg font-display text-[0.65rem] tracking-[0.12em] uppercase transition-all duration-200"
-            style={activeTab === tab.id
-              ? { background: 'rgba(201,151,58,0.15)', color: '#C9973A', border: '1px solid rgba(201,151,58,0.25)' }
-              : { color: 'rgba(138,130,120,0.7)', border: '1px solid transparent' }
-            }
-          >
-            {tab.label}
-          </button>
-        ))}
+      <div className="overflow-x-auto pb-1 -mb-1">
+        <div className="flex gap-1 p-1 rounded-xl w-fit min-w-full sm:min-w-0"
+          style={{ background: 'rgba(15,16,21,0.9)', border: '1px solid rgba(201,151,58,0.1)' }}>
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex-1 sm:flex-none px-4 sm:px-5 py-2.5 sm:py-2 rounded-lg font-display text-[0.65rem] tracking-[0.12em] uppercase transition-all duration-200 whitespace-nowrap"
+              style={activeTab === tab.id
+                ? { background: 'rgba(201,151,58,0.15)', color: '#C9973A', border: '1px solid rgba(201,151,58,0.25)' }
+                : { color: 'rgba(138,130,120,0.7)', border: '1px solid transparent' }
+              }
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Overview Tab ────────────────────────────────────────────────── */}
@@ -194,7 +196,7 @@ if (loading) return <PageLoader />
             <p className="font-display text-[0.62rem] tracking-[0.2em] uppercase text-smoke">All Users</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full" style={{ minWidth: '580px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(201,151,58,0.06)' }}>
                   {['User', 'Role', 'Wallets', 'Status', 'Joined', 'Action'].map(h => (
@@ -256,7 +258,7 @@ if (loading) return <PageLoader />
             <p className="font-display text-[0.62rem] tracking-[0.2em] uppercase text-smoke">All Transactions</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full" style={{ minWidth: '560px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(201,151,58,0.06)' }}>
                   {['ID', 'Type', 'Amount', 'User', 'Status', 'Date'].map(h => (

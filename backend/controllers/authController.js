@@ -1,3 +1,16 @@
+/**
+ * Authentication Controller
+ *
+ * Handles user registration, login, logout, and identity (me) endpoints.
+ * All successful logins/registrations create a row in user_sessions so that
+ * tokens can be invalidated server-side without waiting for JWT expiry.
+ *
+ * Security notes:
+ *  - Passwords are hashed with bcrypt (12 rounds by default)
+ *  - JWTs are never stored raw — only their SHA-256 hash goes into user_sessions
+ *  - Every protected request checks user_sessions.is_active, enabling true logout
+ */
+
 const bcrypt   = require('bcryptjs')
 const jwt      = require('jsonwebtoken')
 const crypto   = require('crypto')
@@ -5,10 +18,11 @@ const { body } = require('express-validator')
 const { query } = require('../config/database')
 const { send, fail } = require('../utils/response')
 
-// Hash a JWT for safe storage (never store raw token)
+/** Returns SHA-256 hex digest of a JWT — used for safe session storage */
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex')
 
 // Calculate session expiry from JWT_EXPIRES_IN (e.g. '7d', '24h')
+/** Parses JWT_EXPIRES_IN env var (e.g. '7d', '24h') into an absolute Date */
 function sessionExpiresAt() {
   const raw = process.env.JWT_EXPIRES_IN || '7d'
   const m   = /^(\d+)([smhd])$/.exec(raw)
@@ -17,6 +31,12 @@ function sessionExpiresAt() {
   return new Date(Date.now() + parseInt(m[1]) * ms)
 }
 
+/**
+ * Inserts a new active session row linked to the given JWT.
+ * @param {string} userId - UUID of the user
+ * @param {string} token  - Raw JWT (will be hashed before storage)
+ * @param {import('express').Request} req
+ */
 async function createSession(userId, token, req) {
   const ip         = req.ip || req.socket?.remoteAddress || null
   const deviceInfo = req.headers['user-agent']?.slice(0, 255) || null
@@ -45,6 +65,12 @@ const signToken = (userId, role) =>
 
 // ── POST /api/auth/register ───────────────────────────────────────────────────
 
+/**
+ * Creates a new user account, seeds a default PKR wallet, and returns a JWT.
+ * @route POST /api/auth/register
+ * @body  {name, email, password, phone?}
+ * @returns {token, user}
+ */
 const register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body
@@ -86,6 +112,13 @@ const register = async (req, res) => {
 
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 
+/**
+ * Validates credentials and returns a JWT + session record.
+ * Returns 401 for wrong password/unknown email; 403 for suspended accounts.
+ * @route POST /api/auth/login
+ * @body  {email, password}
+ * @returns {token, user}
+ */
 const login = async (req, res) => {
   try {
     const { email, password } = req.body
@@ -115,6 +148,10 @@ const login = async (req, res) => {
 
 // ── POST /api/auth/logout ─────────────────────────────────────────────────────
 
+/**
+ * Marks the current session inactive so the token is rejected on future requests.
+ * @route POST /api/auth/logout
+ */
 const logout = async (req, res) => {
   try {
     const header = req.headers.authorization
@@ -134,6 +171,10 @@ const logout = async (req, res) => {
 
 // ── POST /api/auth/logout-all ─────────────────────────────────────────────────
 
+/**
+ * Invalidates every active session for the authenticated user (all devices).
+ * @route POST /api/auth/logout-all
+ */
 const logoutAll = async (req, res) => {
   try {
     await query(
@@ -149,6 +190,10 @@ const logoutAll = async (req, res) => {
 
 // ── GET /api/auth/me ──────────────────────────────────────────────────────────
 
+/**
+ * Returns the authenticated user's profile (id, name, email, role).
+ * @route GET /api/auth/me
+ */
 const me = async (req, res) => {
   try {
     const { rows } = await query('SELECT * FROM users WHERE user_id = $1', [req.user.user_id])

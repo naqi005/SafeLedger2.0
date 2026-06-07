@@ -145,31 +145,34 @@ export default function Wallets() {
           {wallets.map(w => (
             <div key={w._id} className="space-y-2.5">
               <WalletCard wallet={w} />
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 <button
                   onClick={() => { setSelectedWallet(w); setAddMoneyOpen(true) }}
-                  className="btn-outline text-xs py-2 flex items-center justify-center gap-1"
+                  className="py-2.5 sm:py-2 rounded-xl font-display text-[0.6rem] sm:text-xs tracking-wider uppercase transition-all duration-200 border flex items-center justify-center gap-1"
+                  style={{ borderColor: 'rgba(201,151,58,0.35)', color: '#C9973A', background: 'transparent' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,151,58,0.08)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                   </svg>
-                  Deposit
+                  <span>Add</span>
                 </button>
                 <button
                   onClick={() => { setSelectedWallet(w); setWithdrawOpen(true) }}
-                  className="text-xs py-2 rounded-xl font-display tracking-wider uppercase transition-all duration-200 border flex items-center justify-center gap-1"
+                  className="py-2.5 sm:py-2 rounded-xl font-display text-[0.6rem] sm:text-xs tracking-wider uppercase transition-all duration-200 border flex items-center justify-center gap-1"
                   style={{ borderColor: 'rgba(201,151,58,0.25)', color: '#C9973A', background: 'transparent' }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(201,151,58,0.08)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4m0 0l6-6m-6 6l6 6" />
                   </svg>
-                  Withdraw
+                  <span>Out</span>
                 </button>
                 <button
                   onClick={() => handleToggleStatus(w)}
-                  className="text-xs py-2 rounded-xl font-display tracking-wider uppercase transition-all duration-200 border"
+                  className="py-2.5 sm:py-2 rounded-xl font-display text-[0.6rem] sm:text-xs tracking-wider uppercase transition-all duration-200 border"
                   style={w.status === 'active'
                     ? { borderColor: 'rgba(239,68,68,0.3)', color: '#F87171', background: 'transparent' }
                     : { borderColor: 'rgba(74,222,128,0.3)', color: '#4ADE80', background: 'transparent' }
@@ -192,7 +195,7 @@ export default function Wallets() {
             <p className="font-display text-[0.62rem] tracking-[0.2em] uppercase text-smoke">Wallet Summary</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full" style={{ minWidth: '380px' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(201,151,58,0.06)' }}>
                   {['Currency', 'Balance', 'Status', 'Action'].map(h => (
